@@ -14,7 +14,7 @@ let main argv =
         ()
 
 
-    let guess = Guess (Console.ReadKey >> (fun cki -> cki.KeyChar))
+    let guess = Guess ((fun () -> Console.ReadKey(true)) >> (fun cki -> cki.KeyChar))
 
 
     0 // return an integer exit code
