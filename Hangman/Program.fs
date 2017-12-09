@@ -14,7 +14,7 @@ let main argv =
     let rec Guess (history: list<char>) (guessFn: Unit -> Char) = 
         let res = guessFn()
         if history |> List.contains res then 
-            printf "Letter %c has allready been guessed.\n" res
+            printfn "Letter %c has allready been guessed." res
             Guess history guessFn
         else
             res 
@@ -24,9 +24,9 @@ let main argv =
         let history = SaveToHistory history letter
         let correctGuess = CorrectGuess(letter, word) 
 
-        printf "%s\n" (match correctGuess with
-                       | Some letter -> sprintf "Letter '%c' is correct!" letter
-                       | None -> sprintf "Letter '%c' is incorrect!" letter)
+        match correctGuess with
+        | Some letter -> printfn "Letter '%c' is correct!" letter
+        | None -> printfn "Letter '%c' is incorrect!" letter
 
         match correctGuess |> Option.bind (fun _ -> GameWon word history) with
         | Some _ -> attempts
@@ -34,5 +34,5 @@ let main argv =
 
 
     let attempts = Game [] 1
-    printf "Game finished, attempts required: '%i'" attempts
+    printfn "Game finished, attempts required: '%i'" attempts
     0
