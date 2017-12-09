@@ -11,16 +11,16 @@ let main argv =
         let GameWon word history =
             if word |> String.forall (fun x ->  history |> List.contains x)  then Some(word) else None
         
-        let rec Guess (history: list<char>) (guessFn: Unit -> Char) = 
-            let res = guessFn()
+        let rec Guess (history: list<char>) = 
+            let res = inputFn()
             if history |> List.contains res then 
                 sprintf "Letter %c has allready been guessed." res |> outputFn
-                Guess history guessFn
+                Guess history
             else
                 res 
 
         let rec Game (history: List<char>) (attempts: int) =
-            let letter = Guess history inputFn
+            let letter = Guess history
             let history = SaveToHistory history letter
             let correctGuess = CorrectGuess(letter, word) 
 
