@@ -1,29 +1,38 @@
-﻿// Learn more about F# at http://fsharp.org
-// See the 'F# Tutorial' project for more help.
-
-open System
+﻿open System
 [<EntryPoint>]
 let main argv = 
     let word = "word"
-
-    let Guess (keyFn: Unit -> Char) = 
-        let key = keyFn()
+    let CorrectGuess (key: char, word: string) = 
         if word |> String.exists (fun x -> key = x) then Some(key) else None
+
+    let SaveToHistory (history: List<char>) (item: char) =
+        history |> List.append [item]
+
+    let GameWon word history =
+        if word |> String.forall (fun x ->  history |> List.contains x)  then Some(word) else None
     
-    let NewGuess (guesses: List<char>) (guess: char) =
-        if guesses |> List.exists (fun x -> x = guess) then None else Some(guess)
+    let rec Guess (history: list<char>) (guessFn: Unit -> Char) = 
+        let res = guessFn()
+        if history |> List.contains res then 
+            printf "Letter %c has allready been guessed.\n" res
+            Guess history guessFn
+        else
+            res 
 
-    let rec Game (guesses: List<char>) (attempts: int) =
-        let (>>=) x s = Option.bind s x
+    let rec Game (history: List<char>) (attempts: int) =
+        let letter = Guess history ((fun () -> Console.ReadKey(true)) >> fun cki -> cki.KeyChar)
+        let history = SaveToHistory history letter
+        let correctGuess = CorrectGuess(letter, word) 
 
-        let guess = Guess ((fun () -> Console.ReadKey(true)) >> (fun cki -> cki.KeyChar))
-        let res = guess >>= (fun x -> NewGuess guesses x)
-        let output = match res with
-                     | Some x -> sprintf "Success char: %c" x
-                     | None -> "Fail char"
+        printf "%s\n" (match correctGuess with
+                       | Some letter -> sprintf "Letter '%c' is correct!" letter
+                       | None -> sprintf "Letter '%c' is incorrect!" letter)
 
-        printfn "%s" output
-        Game guesses attempts + 1
+        match correctGuess |> Option.bind (fun _ -> GameWon word history) with
+        | Some _ -> attempts
+        | None -> Game history attempts + 1
 
-    let score = Game [] 0
-    0 // return an integer exit code
+
+    let attempts = Game [] 1
+    printf "Game finished, attempts required: '%i'" attempts
+    0
