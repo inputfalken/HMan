@@ -6,18 +6,17 @@ let main argv =
             if word |> String.exists (fun x -> key = x) then Some(key) else None
 
         let SaveToHistory (history: List<char>) (item: char) =
-            history |> List.append [item]
+            (history, [item]) ||> List.append 
 
         let GameWon word history =
             if word |> String.forall (fun x ->  history |> List.contains x)  then Some(word) else None
         
         let rec Guess (history: list<char>) = 
             let res = inputFn()
-            if history |> List.contains res then 
+            if (res, history) ||> List.contains then 
                 sprintf "Letter %c has allready been guessed." res |> outputFn
                 Guess history
-            else
-                res 
+            else res 
 
         let rec Game (history: List<char>) (attempts: int) =
             let letter = history |> Guess
