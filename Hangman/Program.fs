@@ -13,12 +13,13 @@ let main argv =
     let WordProgress (word: string) history =
         word |> Seq.toList |> List.map (fun x -> if (x, history) ||> List.contains then Some(x) else None)
 
-    let Game (word: string) (input: Unit -> char) (output: string -> Unit) = 
+    let Game (word: string) (input: Unit -> char) (output: string -> Unit) (clear:  Unit -> Unit) = 
         let OutputWordProgress word history =
             (word, history) ||> WordProgress |> List.map (fun x -> match x with | Some x -> x | None -> '_') |> List.toArray |> (fun s -> s |> String) |> output
 
         let rec Guess (history: list<char>) =
             let res = input()
+            clear()
             if (res, history) ||> List.contains then
                 sprintf "Letter %c has allready been guessed." res |> output
                 (word, history) ||>  OutputWordProgress
@@ -42,5 +43,5 @@ let main argv =
         let attempts = Turn [] 1
         sprintf "Game finished, attempts required: '%i'" attempts |> output
     
-    Game "woooord" ((fun () -> Console.ReadKey(true)) >> fun cki -> cki.KeyChar) Console.WriteLine
+    Game "woooord" ((fun () -> Console.ReadKey(true)) >> fun cki -> cki.KeyChar) Console.WriteLine Console.Clear
     0
