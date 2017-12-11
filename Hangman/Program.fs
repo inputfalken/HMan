@@ -9,11 +9,13 @@ let main argv =
 
     let GameWon word history =
         if word |> String.forall (fun x -> history |> List.contains x) then Some(word) else None
+
+    let GameLost maxAttempts attempts =
+        if attempts >= maxAttempts then Some(attempts) else None
     
     let WordProgress (word: string) history =
         word |> Seq.toList |> List.map (fun x -> if (x, history) ||> List.contains then Some(x) else None)
 
-    
     let Game (word: String) (input: Unit -> Char) (output: String -> Unit) (clear:  Unit -> Unit) = 
         let OutputWordProgress word history =
             (word, history) ||> WordProgress |> List.map (fun x -> match x with | Some x -> x | None -> '_') |> List.toArray |> (fun s -> s |> String) |> output
