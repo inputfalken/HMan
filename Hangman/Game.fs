@@ -7,10 +7,10 @@ let CorrectGuess (key: char) (word: string) =
 let SaveToHistory (history: List<char>) (item: char) =
     (history, [item]) ||> List.append
 
-let GameWon word history =
+let Won word history =
     if word |> String.forall (fun x -> history |> List.contains x) then Some(word) else None
 
-let GameLost maxAttempts attempts =
+let Lost maxAttempts attempts =
     if attempts >= maxAttempts then Some(attempts) else None
 
 let WordProgress (word: string) history =
@@ -39,7 +39,7 @@ let Game (word: string) (input: unit -> char) (output: string -> unit) (clear:  
         | None -> letter |> sprintf "Letter '%c' is incorrect!" |> output
 
         (word, history) ||> OutputWordProgress
-        match correctGuess |> Option.bind (fun _ -> GameWon word history) with
+        match correctGuess |> Option.bind (fun _ -> (word, history) ||> Won ) with
         | Some _ -> attempts
         | None -> Turn history attempts + 1
 
