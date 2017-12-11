@@ -22,7 +22,7 @@ let main argv =
             let res = input()
             clear()
             if (res, history) ||> List.contains then
-                res |> sprintf "Letter %c has allready been guessed." |> output
+                res |> sprintf "Letter '%c' has allready been guessed." |> output
                 (word, history) ||>  OutputWordProgress
                 Guess history
             else res
