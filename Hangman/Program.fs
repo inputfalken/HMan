@@ -13,15 +13,16 @@ let main argv =
     let WordProgress (word: string) history =
         word |> Seq.toList |> List.map (fun x -> if (x, history) ||> List.contains then Some(x) else None)
 
-    let Game (word: string) (input: Unit -> char) (output: string -> Unit) (clear:  Unit -> Unit) = 
+    
+    let Game (word: String) (input: Unit -> Char) (output: String -> Unit) (clear:  Unit -> Unit) = 
         let OutputWordProgress word history =
             (word, history) ||> WordProgress |> List.map (fun x -> match x with | Some x -> x | None -> '_') |> List.toArray |> (fun s -> s |> String) |> output
 
-        let rec Guess (history: list<char>) =
+        let rec Guess (history: List<char>) =
             let res = input()
             clear()
             if (res, history) ||> List.contains then
-                sprintf "Letter %c has allready been guessed." res |> output
+                res |> sprintf "Letter %c has allready been guessed." |> output
                 (word, history) ||>  OutputWordProgress
                 Guess history
             else res
@@ -32,8 +33,8 @@ let main argv =
             let correctGuess = (letter, word) ||> CorrectGuess
 
             match correctGuess with
-            | Some letter -> sprintf "Letter '%c' is correct!" letter |> output
-            | None -> sprintf "Letter '%c' is incorrect!" letter |> output
+            | Some _ -> letter |> sprintf "Letter '%c' is correct!" |> output
+            | None -> letter |> sprintf "Letter '%c' is incorrect!" |> output
 
             (word, history) ||> OutputWordProgress
             match correctGuess |> Option.bind (fun _ -> GameWon word history) with
@@ -41,7 +42,7 @@ let main argv =
             | None -> Turn history attempts + 1
 
         let attempts = Turn [] 1
-        sprintf "Game finished, attempts required: '%i'" attempts |> output
+        attempts |> sprintf "Game finished, attempts required: '%i'" |> output
     
     Game "woooord" ((fun () -> Console.ReadKey(true)) >> fun cki -> cki.KeyChar) Console.WriteLine Console.Clear
     0
