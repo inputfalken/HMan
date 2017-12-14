@@ -8,7 +8,7 @@ let private SaveToHistory (history: List<char>) (item: char) =
     (history, [item]) ||> List.append
 
 let private Won word history attempts =
-    if word |> String.forall (fun x -> history |> List.contains x) then Some(attempts) else None
+    word |> Some |> Option.filter (fun x -> x |> String.forall (fun x -> history |> List.contains x)) |> Option.map (fun _ -> attempts)
 
 let private Lost maxAttempts attempts =
     attempts |> Some |> Option.filter (fun x -> x >= maxAttempts)
