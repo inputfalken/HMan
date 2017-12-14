@@ -4,16 +4,15 @@ open System
 let rec private SetMaxAttempts (input: unit -> char) (output: string -> unit) (inputs: List<char>) =
     "Input max attempts" |> output
     let userInput = input()
-    let isDone = (if userInput = 'y' then Some(userInput) else None)
-    let AnyInput  = (if inputs.Length > 0 then Some(userInput) else None)
+    let isDone = userInput |> Some |> Option.filter (fun x -> x = 'y') |> Option.filter (fun _ -> inputs.Length > 0)
     let inputs = if userInput |> Char.IsNumber then (inputs, [userInput]) ||> List.append else inputs
 
-    match isDone |> Option.bind (fun _ -> AnyInput) with
+    match isDone with
     | Some _ -> inputs
     | None -> (input, output, inputs) |||> SetMaxAttempts
     
 let private CorrectGuess (letter: char) (word: string) =
-    if word |> String.exists (fun x -> letter = x) then Some(letter) else None
+    word |> Option.Some |> Option.filter(fun x -> x |> String.exists (fun x -> letter = x) )
 
 let private SaveToHistory (history: List<char>) (item: char) =
     (history, [item]) ||> List.append
@@ -22,10 +21,10 @@ let private Won word history attempts =
     if word |> String.forall (fun x -> history |> List.contains x) then Some(attempts) else None
 
 let private Lost maxAttempts attempts =
-    if attempts >= maxAttempts then Some(attempts) else None
+    attempts |> Some |> Option.filter (fun x -> x >= maxAttempts)
 
 let private CorrectlyGuessedLetters (word: string) history =
-    word |> Seq.map (fun x -> if (x, history) ||> Seq.contains then Some(x) else None)
+    word |> Seq.map Some |> Seq.map (fun x -> x |> Option.filter (fun x -> (x, history) ||> Seq.contains))
 
 let Game (word: string) (input: unit -> char) (output: string -> unit) (clear: unit -> unit) = 
         
