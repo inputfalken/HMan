@@ -2,7 +2,7 @@
 open System
     
 let private CorrectGuess (letter: char) (word: string) =
-    word |> Option.Some |> Option.filter(fun x -> x |> String.exists (fun x -> letter = x) )
+    letter |> Option.Some |> Option.filter(fun x -> word |> String.exists (fun y -> x = y))
 
 let private SaveToHistory (history: List<char>) (item: char) =
     (history, [item]) ||> List.append
@@ -18,7 +18,7 @@ let private CorrectlyGuessedLetters (word: string) history =
 
 let Game (word: string) (input: unit -> char) (output: string -> unit) (clear: unit -> unit) = 
         
-    let rec SetMaxAttempts (inputs: List<char>) =
+    let rec SetMaxInvalidGuesses (inputs: List<char>) =
         clear()
         sprintf "Max attempts: %s" (inputs |> List.toArray |> String) |> output
         let userInput = input()
@@ -27,7 +27,7 @@ let Game (word: string) (input: unit -> char) (output: string -> unit) (clear: u
 
         match isDone with
         | Some _ -> inputs
-        | None ->  inputs |> SetMaxAttempts
+        | None ->  inputs |> SetMaxInvalidGuesses
 
     let OutputWordProgress word history =
          (word, history) ||> CorrectlyGuessedLetters |> Seq.map (fun x -> match x with | Some x -> x | None -> '_') |> Seq.toArray |> String |> output
@@ -40,29 +40,36 @@ let Game (word: string) (input: unit -> char) (output: string -> unit) (clear: u
             (word, history) ||>  OutputWordProgress
             Guess history
         else res
-
-    let rec Turn (history: List<char>) (attempts: int) (maxAttempts: int)=
+    
+    let rec Turn (history: List<char>) (attempts: int) (maxAttempts: int) =
         let letter = history |> Guess
         let history = (history, letter) ||> SaveToHistory
         let correctGuess = (letter, word) ||> CorrectGuess
 
-        match correctGuess with
-        | Some _ -> letter |> sprintf "Letter '%c' is correct!" |> output
-        | None -> letter |> sprintf "Letter '%c' is incorrect!" |> output
+        let correct letter =
+            letter |> sprintf "Letter '%c' is correct!" |> output
+            (history, attempts , maxAttempts)
+            
+        let incorrect() =
+            sprintf  "Incorrect Guess" |> output
+            (history, attempts + 1, maxAttempts)
 
         (word, history) ||> OutputWordProgress
 
-        // This is some if game is lost or won otherwise it's none
-        match (maxAttempts, attempts) ||> Lost |> (correctGuess |> Option.bind (fun _ -> (word, history, attempts) |||> Won) |> Option.orElse) with
+        let maybeLost = (maxAttempts, attempts) ||> Lost
+        let maybeWon = correctGuess |> Option.bind (fun _ -> (word, history, attempts) |||> Won)
+        let gameOver = (maybeLost, maybeWon) ||> Option.orElse
+
+        match gameOver with
         | Some x -> x
-        | None -> match correctGuess with
-                  | Some x -> (history, attempts, maxAttempts) |||> Turn 
-                  | None -> (history, (attempts + 1), maxAttempts) |||> Turn 
+        | None -> (match correctGuess with
+                   | Some x -> x |> correct 
+                   | None ->  incorrect()) |||> Turn
 
     "Set max attempts" |> output
-    let maxAttempts = [] |> SetMaxAttempts |> List.toArray |> String |> int
-    maxAttempts |> sprintf  "Maximum attempts set to '%d'" |> output
-    let attempts = Turn [] 0 maxAttempts
-    attempts |> sprintf "Game finished, attempts required: '%i'" |> output
+    let maxInvalidGuesses = [] |> SetMaxInvalidGuesses |> List.toArray |> String |> int
+    maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
+    let score = Turn [] 0 maxInvalidGuesses
+    score |> sprintf "Game finished, wrong guesses: '%i'" |> output
 
-    if attempts < maxAttempts then Some(attempts) else None
+    if score < maxInvalidGuesses then Some(score) else None
