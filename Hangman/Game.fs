@@ -70,6 +70,6 @@ let Game (word: string) (input: unit -> char) (output: string -> unit) (clear: u
     let maxInvalidGuesses = [] |> SetMaxInvalidGuesses |> List.toArray |> String |> int
     maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
     let score = Turn [] 0 maxInvalidGuesses
-    score |> sprintf "Game finished, wrong guesses: '%i'" |> output
+    score |> sprintf "Game finished, invalid guesses: '%i'" |> output
 
     if score < maxInvalidGuesses then Some(score) else None
