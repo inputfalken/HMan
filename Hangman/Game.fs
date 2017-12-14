@@ -1,15 +1,5 @@
 ﻿module Game
 open System
-
-let rec private SetMaxAttempts (input: unit -> char) (output: string -> unit) (inputs: List<char>) =
-    "Input max attempts" |> output
-    let userInput = input()
-    let isDone = userInput |> Some |> Option.filter (fun x -> x = 'y') |> Option.filter (fun _ -> inputs.Length > 0)
-    let inputs = if userInput |> Char.IsNumber then (inputs, [userInput]) ||> List.append else inputs
-
-    match isDone with
-    | Some _ -> inputs
-    | None -> (input, output, inputs) |||> SetMaxAttempts
     
 let private CorrectGuess (letter: char) (word: string) =
     word |> Option.Some |> Option.filter(fun x -> x |> String.exists (fun x -> letter = x) )
@@ -28,6 +18,17 @@ let private CorrectlyGuessedLetters (word: string) history =
 
 let Game (word: string) (input: unit -> char) (output: string -> unit) (clear: unit -> unit) = 
         
+    let rec SetMaxAttempts (inputs: List<char>) =
+        clear()
+        sprintf "Max attempts: %s" (inputs |> List.toArray |> String) |> output
+        let userInput = input()
+        let isDone = userInput |> Some |> Option.filter (fun x -> x = 'y') |> Option.filter (fun _ -> inputs.Length > 0)
+        let inputs = if userInput |> Char.IsNumber then (inputs, [userInput]) ||> List.append else inputs
+
+        match isDone with
+        | Some _ -> inputs
+        | None ->  inputs |> SetMaxAttempts
+
     let OutputWordProgress word history =
          (word, history) ||> CorrectlyGuessedLetters |> Seq.map (fun x -> match x with | Some x -> x | None -> '_') |> Seq.toArray |> String |> output
 
@@ -59,7 +60,7 @@ let Game (word: string) (input: unit -> char) (output: string -> unit) (clear: u
                   | None -> (history, (attempts + 1), maxAttempts) |||> Turn 
 
     "Set max attempts" |> output
-    let maxAttempts = (input, output, []) |||> SetMaxAttempts |> List.toArray |> String |> int
+    let maxAttempts = [] |> SetMaxAttempts |> List.toArray |> String |> int
     maxAttempts |> sprintf  "Maximum attempts set to '%d'" |> output
     let attempts = Turn [] 0 maxAttempts
     attempts |> sprintf "Game finished, attempts required: '%i'" |> output
