@@ -5,5 +5,6 @@ type Stats = {
     Attemps: int
     MaxAttemps: int
     Guesses: List<char>
+    GameWon: bool
 }
 

@@ -68,7 +68,7 @@ let Game (word: string) (config: Config) =
         let gameOver = (maybeLost, maybeWon) ||> Option.orElse
 
         match gameOver with
-        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history }
+        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history; GameWon = maxAttempts < attempts }
         | None -> (match correctGuess with
                    | Some x -> x |> correct 
                    | None ->  incorrect()) |||> Turn
