@@ -1,4 +1,5 @@
 ﻿module Game
+open Stats
 open System
 open Config
     
@@ -67,7 +68,7 @@ let Game (word: string) (config: Config) =
         let gameOver = (maybeLost, maybeWon) ||> Option.orElse
 
         match gameOver with
-        | Some x -> x
+        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history }
         | None -> (match correctGuess with
                    | Some x -> x |> correct 
                    | None ->  incorrect()) |||> Turn
@@ -75,8 +76,7 @@ let Game (word: string) (config: Config) =
     "Set max attempts" |> output
     let maxInvalidGuesses = SetMaxInvalidGuesses()
     maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
-    let score = Turn [] 0 maxInvalidGuesses
+    let stats = Turn [] 0 maxInvalidGuesses
     word |> sprintf "Game over, the word was: '%s'" |> output
-    score |> sprintf "Invalid guesses: '%i'" |> output
-
-    if score < maxInvalidGuesses then Some(score) else None
+    stats.Attemps |> sprintf "Invalid guesses: '%i'" |> output
+    stats

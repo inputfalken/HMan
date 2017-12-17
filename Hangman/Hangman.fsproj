@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Config.fs" />
+    <Compile Include="Stats.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />

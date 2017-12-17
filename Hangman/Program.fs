@@ -19,5 +19,5 @@ let main argv =
         LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | None -> '-') |> Seq.toArray |> String)
     }
 
-    let game = ((words |> randomizeListItem), config) ||> Game 
+    let stats = ((words |> randomizeListItem), config) ||> Game
     0
