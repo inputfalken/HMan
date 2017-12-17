@@ -20,11 +20,11 @@ let private CorrectlyGuessedLetters (word: string) history =
 
 let Game (word: string) (config: Config) = 
     let ({ 
-            ClearWindow = clear;
-            StringInput = inputString;
-            CharInput = inputChar;
-            OutputString = output;
-            LetterMatcher = letterMatcher;
+            ClearWindow = clear
+            StringInput = inputString
+            CharInput = inputChar
+            OutputString = output
+            LetterMatcher = letterMatcher
     }) = config
 
     let rec SetMaxInvalidGuesses() =
