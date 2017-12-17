@@ -68,7 +68,7 @@ let Game (word: string) (config: Config) =
         let gameOver = (maybeLost, maybeWon) ||> Option.orElse
 
         match gameOver with
-        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history; GameWon = maxAttempts < attempts }
+        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history; GameWon = attempts < maxAttempts }
         | None -> (match correctGuess with
                    | Some x -> x |> correct 
                    | None ->  incorrect()) |||> Turn
@@ -76,7 +76,4 @@ let Game (word: string) (config: Config) =
     "Set max attempts" |> output
     let maxInvalidGuesses = SetMaxInvalidGuesses()
     maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
-    let stats = Turn [] 0 maxInvalidGuesses
-    word |> sprintf "Game over, the word was: '%s'" |> output
-    stats.Attemps |> sprintf "Invalid guesses: '%i'" |> output
-    stats
+    Turn [] 0 maxInvalidGuesses
