@@ -76,6 +76,7 @@ let Game (word: string) (config: Config) =
     let maxInvalidGuesses = SetMaxInvalidGuesses()
     maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
     let score = Turn [] 0 maxInvalidGuesses
-    score |> sprintf "Game finished, invalid guesses: '%i'" |> output
+    word |> sprintf "Game over, the word was: '%s'" |> output
+    score |> sprintf "Invalid guesses: '%i'" |> output
 
     if score < maxInvalidGuesses then Some(score) else None
