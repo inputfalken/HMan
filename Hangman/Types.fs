@@ -1,4 +1,4 @@
-﻿module Config
+﻿module Types
 
 type Config = {
     StringInput: unit -> string; 
@@ -6,4 +6,12 @@ type Config = {
     OutputString: string -> unit; 
     ClearWindow: unit -> unit;
     LetterMatcher: seq<Option<char>> -> string
+}
+
+type Stats = {
+    Word: string
+    Attemps: int
+    MaxAttemps: int
+    Guesses: List<char>
+    GameWon: bool
 }

@@ -1,14 +1,14 @@
 ﻿module Program
-open Game
-open Config
 open System
 open System.IO
+open Game
+open Types
 
 
 [<EntryPoint>]
 let main argv =
     let rnd = Random();
-    let words = Lazy.Create (fun () -> "./words.txt" |> File.ReadAllLines)
+    let words = Lazy<string[]>.Create (fun () -> "./words.txt" |> File.ReadAllLines)
     let randomizeListItem  (words: string[]) = words |> (fun x -> x.Length |> rnd.Next |> (fun i -> (x, i) ||> Array.get))
     let config = {
         StringInput = Console.ReadLine
