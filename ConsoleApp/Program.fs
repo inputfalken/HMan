@@ -2,7 +2,7 @@
 open System
 open System.IO
 open Game
-open Types
+open DataStructures
 
 
 [<EntryPoint>]

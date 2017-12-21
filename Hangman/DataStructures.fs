@@ -1,4 +1,4 @@
-﻿module Types
+﻿module DataStructures
 
 type Config = {
     StringInput: unit -> string; 

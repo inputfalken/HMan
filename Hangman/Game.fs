@@ -1,6 +1,6 @@
 ﻿module Game
 open System
-open Types
+open DataStructures
     
 let private CorrectGuess (letter: char) (word: string) =
     letter |> Option.Some |> Option.filter(fun x -> word |> String.exists (fun y -> x = y))
