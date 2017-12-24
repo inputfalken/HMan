@@ -5,7 +5,7 @@ type Config = {
     CharInput: unit -> char; 
     OutputString: string -> unit; 
     ClearWindow: unit -> unit;
-    LetterMatcher: seq<Option<char>> -> string
+    LetterMatcher: seq<Option<char>> -> unit
 }
 
 type Stats = {

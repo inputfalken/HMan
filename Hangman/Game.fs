@@ -37,7 +37,7 @@ let Game (word: string) (config: Config) =
         | _ -> SetMaxInvalidGuesses()
 
     let OutputWordProgress word history =
-         (word, history) ||> CorrectlyGuessedLetters |> letterMatcher |> output
+         (word, history) ||> CorrectlyGuessedLetters |> letterMatcher
 
     let rec Guess (history: List<char>) =
         let res = inputChar()
