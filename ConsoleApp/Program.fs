@@ -17,9 +17,6 @@ let main argv =
         ClearWindow = Console.Clear
         LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | None -> '-') |> Seq.toArray |> String)
     }
-
-    let stats = ((words.Value |> randomizeListItem), config) ||> Game
-    ((if stats.GameWon then "won" else "lost"), stats.Word) ||> sprintf "Game %s, the word was: '%s'" |> Console.WriteLine
-    stats.Attemps |> sprintf "Invalid guesses: '%i'" |> Console.WriteLine
+    let stats = ((words.Value |> randomizeListItem), config, []) |||> Game
     0
 

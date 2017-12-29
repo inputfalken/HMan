@@ -16,8 +16,12 @@ let private Lost maxAttempts attempts =
 
 let private CorrectlyGuessedLetters (word: string) history =
     word |> Seq.map Some |> Seq.map (fun x -> x |> Option.filter (fun x -> (x, history) ||> Seq.contains))
-
-let Game (word: string) (config: Config) = 
+let private TryParseInt str =
+   match Int32.TryParse(str) with
+   | (true, int) -> Some(int)
+   | _ -> None
+    
+let rec Game (word: string) (config: Config) (stats: List<Stats>) = 
     let ({ 
             ClearWindow = clear
             StringInput = inputString
@@ -27,12 +31,7 @@ let Game (word: string) (config: Config) =
     }) = config
 
     let rec SetMaxInvalidGuesses() =
-        let tryParseInt str =
-           match Int32.TryParse(str) with
-           | (true, int) -> Some(int)
-           | _ -> None
-
-        match inputString() |> tryParseInt |> Option.filter (fun x -> x > 0) with 
+        match inputString() |> TryParseInt |> Option.filter (fun x -> x > 0) with 
         | Some x -> x
         | _ -> SetMaxInvalidGuesses()
 
@@ -47,6 +46,14 @@ let Game (word: string) (config: Config) =
             (word, history) ||>  OutputWordProgress
             Guess history
         else res
+
+    let rec Menu (options : List<string>)  = 
+        if options.Length > 0 then
+            options |> List.mapi (fun i x -> (i + 1, x) ||> sprintf "%i: %s") |> List.iter output
+            match inputString() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) with
+            | Some x -> x
+            | None -> options |> Menu
+        else invalidArg "options" "List cannot be empty."
     
     let rec Turn (history: List<char>) (attempts: int) (maxAttempts: int) =
         (word, history) ||> OutputWordProgress
@@ -72,7 +79,15 @@ let Game (word: string) (config: Config) =
                    | Some x -> x |> correct 
                    | None ->  incorrect()) |||> Turn
 
-    "Set max attempts" |> output
-    let maxInvalidGuesses = SetMaxInvalidGuesses()
-    maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
-    Turn [] 0 maxInvalidGuesses
+    let StartGame() = 
+        "Set max attempts" |> output
+        let maxInvalidGuesses = SetMaxInvalidGuesses()
+        maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
+        let score = Turn [] 0 maxInvalidGuesses
+        ((if score.GameWon then "won" else "lost"), score.Word) ||> sprintf "Game %s, the word was: '%s'" |> output
+        score.Attemps |> sprintf "Invalid guesses: '%i'" |> output
+        score
+        
+    match Menu ["Start Game" ; "Quit"] with
+    | 1 -> stats |> List.append [StartGame()]
+    | 2 -> stats
