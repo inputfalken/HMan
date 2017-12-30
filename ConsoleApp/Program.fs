@@ -15,7 +15,7 @@ let main argv =
         CharInput = (fun () -> Console.ReadKey(true)) >> fun cki -> cki.KeyChar
         OutputString = Console.WriteLine
         ClearWindow = Console.Clear
-        LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | None -> '-') |> Seq.toArray |> String)
+        LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | None -> '-') |> Seq.toArray |> Console.WriteLine)
     }
     let hangmanSession = ((words.Value |> randomizeListItem), config, []) |||> Session
     0

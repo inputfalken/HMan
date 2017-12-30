@@ -36,7 +36,7 @@ let rec Session (word: string) (config: Config) (stats: List<Stats>) =
         | _ -> SetMaxInvalidGuesses()
 
     let OutputWordProgress word history =
-         (word, history) ||> CorrectlyGuessedLetters |> letterMatcher |> output
+         (word, history) ||> CorrectlyGuessedLetters |> letterMatcher
 
     let rec Guess (history: List<char>) =
         let res = inputChar()
