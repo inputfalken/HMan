@@ -54,7 +54,7 @@ let rec Session (config: Config) (stats: List<Stats>) =
             options |> output.Menu
             match input.Text() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) with
             | Some x -> x
-            | None -> options |> Menu
+            | _ -> options |> Menu
         else invalidArg "options" "List cannot be empty."
     
     let rec Turn (history: List<char>) (attempts: int) (maxAttempts: int) =
@@ -65,7 +65,7 @@ let rec Session (config: Config) (stats: List<Stats>) =
 
         let correct letter =
             letter |> output.CorrectGuess
-            (history, attempts , maxAttempts)
+            (history, attempts, maxAttempts)
             
         let incorrect() =
             letter |> output.IncorrectGuess
@@ -77,9 +77,9 @@ let rec Session (config: Config) (stats: List<Stats>) =
 
         match gameOver with
         | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history; GameWon = attempts < maxAttempts }
-        | None -> (match correctGuess with
+        | _ -> (match correctGuess with
                    | Some x -> x |> correct 
-                   | None ->  incorrect()) |||> Turn
+                   | _ ->  incorrect()) |||> Turn
 
     let StartGame() = 
         "Set max attempts" |> output.Message
