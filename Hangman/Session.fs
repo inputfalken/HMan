@@ -16,6 +16,7 @@ let private Lost maxAttempts attempts =
 
 let private CorrectlyGuessedLetters (word: string) history =
     word |> Seq.map Some |> Seq.map (fun x -> x |> Option.filter (fun x -> (x, history) ||> Seq.contains))
+
 let private TryParseInt str =
    match Int32.TryParse(str) with
    | (true, int) -> Some(int)
@@ -82,13 +83,21 @@ let rec Session (config: Config) (stats: List<Stats>) =
                    | Some x -> x |> correct 
                    | None ->  incorrect()) |||> Turn
 
-    "Set max attempts" |> output
-    let maxInvalidGuesses = SetMaxInvalidGuesses()
-    maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
-    let score = Turn [] 0 maxInvalidGuesses
-    ((if score.GameWon then "won" else "lost"), score.Word) ||> sprintf "Game %s, the word was: '%s'" |> output
-    score.Attemps |> sprintf "Invalid guesses: '%i'" |> output
+    let StartGame() = 
+        "Set max attempts" |> output
+        let maxInvalidGuesses = SetMaxInvalidGuesses()
+        maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
+        let score = Turn [] 0 maxInvalidGuesses
+        ((if score.GameWon then "won" else "lost"), score.Word) ||> sprintf "Game %s, the word was: '%s'" |> output
+        score.Attemps |> sprintf "Invalid guesses: '%i'" |> output
+        score
 
-    match Menu ["Start Game" ; "Quit"] with
-    | 1 -> (config, stats |> List.append [(score)]) ||> Session
-    | 2 -> stats
+    let ShowScoreHistory() =
+        clear()
+        stats |> List.iteri (fun i x -> (i, (if x.GameWon then "won" else "lost"), x.Word) |||> sprintf "%i: Game %s, the word was: '%s'" |> output)
+        (config, stats) ||> Session
+
+    match Menu ["Start Game" ; "Show scores" ; "Quit"] with
+    | 1 -> (config, stats |> List.append [(StartGame())]) ||> Session
+    | 2 -> ShowScoreHistory()
+    | 3 -> stats
