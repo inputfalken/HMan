@@ -21,14 +21,17 @@ let private TryParseInt str =
    | (true, int) -> Some(int)
    | _ -> None
     
-let rec Session (word: string) (config: Config) (stats: List<Stats>) = 
+let rec Session (config: Config) (stats: List<Stats>) = 
     let ({ 
             ClearWindow = clear
             StringInput = inputString
             CharInput = inputChar
             OutputString = output
             LetterMatcher = letterMatcher
+            WordSelector = wordSelector
     }) = config
+
+    let word = wordSelector()
 
     let rec SetMaxInvalidGuesses() =
         match inputString() |> TryParseInt |> Option.filter (fun x -> x > 0) with 
@@ -79,15 +82,13 @@ let rec Session (word: string) (config: Config) (stats: List<Stats>) =
                    | Some x -> x |> correct 
                    | None ->  incorrect()) |||> Turn
 
-    let StartGame() = 
-        "Set max attempts" |> output
-        let maxInvalidGuesses = SetMaxInvalidGuesses()
-        maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
-        let score = Turn [] 0 maxInvalidGuesses
-        ((if score.GameWon then "won" else "lost"), score.Word) ||> sprintf "Game %s, the word was: '%s'" |> output
-        score.Attemps |> sprintf "Invalid guesses: '%i'" |> output
-        score
-        
+    "Set max attempts" |> output
+    let maxInvalidGuesses = SetMaxInvalidGuesses()
+    maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
+    let score = Turn [] 0 maxInvalidGuesses
+    ((if score.GameWon then "won" else "lost"), score.Word) ||> sprintf "Game %s, the word was: '%s'" |> output
+    score.Attemps |> sprintf "Invalid guesses: '%i'" |> output
+
     match Menu ["Start Game" ; "Quit"] with
-    | 1 -> stats |> List.append [StartGame()]
+    | 1 -> (config, stats |> List.append [(score)]) ||> Session
     | 2 -> stats

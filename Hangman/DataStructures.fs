@@ -1,11 +1,12 @@
 ﻿module DataStructures
 
 type Config = {
-    StringInput: unit -> string; 
-    CharInput: unit -> char; 
-    OutputString: string -> unit; 
-    ClearWindow: unit -> unit;
+    StringInput: unit -> string
+    CharInput: unit -> char
+    OutputString: string -> unit
+    ClearWindow: unit -> unit
     LetterMatcher: seq<Option<char>> -> unit
+    WordSelector: unit -> string
 }
 
 type Stats = {
