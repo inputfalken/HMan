@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <Compile Include="DataStructures.fs" />
-    <Compile Include="Game.fs" />
+    <Compile Include="Session.fs" />
   </ItemGroup>
 
 </Project>

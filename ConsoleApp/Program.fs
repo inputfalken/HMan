@@ -1,7 +1,7 @@
 ﻿module Program
 open System
 open System.IO
-open Game
+open Session
 open DataStructures
 
 
@@ -17,6 +17,6 @@ let main argv =
         ClearWindow = Console.Clear
         LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | None -> '-') |> Seq.toArray |> String)
     }
-    let stats = ((words.Value |> randomizeListItem), config, []) |||> Game
+    let hangmanSession = ((words.Value |> randomizeListItem), config, []) |||> Session
     0
 

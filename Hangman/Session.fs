@@ -1,4 +1,4 @@
-﻿module Game
+﻿module Session
 open System
 open DataStructures
     
@@ -21,7 +21,7 @@ let private TryParseInt str =
    | (true, int) -> Some(int)
    | _ -> None
     
-let rec Game (word: string) (config: Config) (stats: List<Stats>) = 
+let rec Session (word: string) (config: Config) (stats: List<Stats>) = 
     let ({ 
             ClearWindow = clear
             StringInput = inputString
