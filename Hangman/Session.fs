@@ -24,37 +24,35 @@ let private TryParseInt str =
     
 let rec Session (config: Config) (stats: List<Stats>) = 
     let ({ 
-            ClearWindow = clear
-            StringInput = inputString
-            CharInput = inputChar
-            OutputString = output
-            LetterMatcher = letterMatcher
+            NewFrame = newFrame
             WordSelector = wordSelector
+            Output = output
+            Input = input
     }) = config
 
     let word = wordSelector()
 
     let rec SetMaxInvalidGuesses() =
-        match inputString() |> TryParseInt |> Option.filter (fun x -> x > 0) with 
+        match input.Text() |> TryParseInt |> Option.filter (fun x -> x > 0) with 
         | Some x -> x
         | _ -> SetMaxInvalidGuesses()
 
     let OutputWordProgress word history =
-         (word, history) ||> CorrectlyGuessedLetters |> letterMatcher
+         (word, history) ||> CorrectlyGuessedLetters |> output.LetterMatcher
 
     let rec Guess (history: List<char>) =
-        let res = inputChar()
-        clear()
-        if (res, history) ||> List.contains then
-            res |> sprintf "Letter '%c' has allready been guessed." |> output
+        let letter = input.Letter()
+        newFrame()
+        if (letter, history) ||> List.contains then
+            letter |> output.AllreadyGuessedLetter
             (word, history) ||>  OutputWordProgress
             Guess history
-        else res
+        else letter
 
     let rec Menu (options : List<string>)  = 
         if options.Length > 0 then
-            options |> List.mapi (fun i x -> (i + 1, x) ||> sprintf "%i: %s") |> List.iter output
-            match inputString() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) with
+            options |> output.Menu
+            match input.Text() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) with
             | Some x -> x
             | None -> options |> Menu
         else invalidArg "options" "List cannot be empty."
@@ -66,11 +64,11 @@ let rec Session (config: Config) (stats: List<Stats>) =
         let correctGuess = (letter, word) ||> CorrectGuess
 
         let correct letter =
-            letter |> sprintf "Letter '%c' is correct!" |> output
+            letter |> output.CorrectGuess
             (history, attempts , maxAttempts)
             
         let incorrect() =
-            sprintf  "Incorrect Guess" |> output
+            letter |> output.IncorrectGuess
             (history, attempts + 1, maxAttempts)
 
         let maybeLost = (maxAttempts, attempts) ||> Lost
@@ -84,17 +82,17 @@ let rec Session (config: Config) (stats: List<Stats>) =
                    | None ->  incorrect()) |||> Turn
 
     let StartGame() = 
-        "Set max attempts" |> output
+        "Set max attempts" |> output.Message
         let maxInvalidGuesses = SetMaxInvalidGuesses()
-        maxInvalidGuesses |> sprintf  "Maximum attempts set to '%d'" |> output
+        newFrame()
+        maxInvalidGuesses |> output.AttemptsSet
         let score = Turn [] 0 maxInvalidGuesses
-        ((if score.GameWon then "won" else "lost"), score.Word) ||> sprintf "Game %s, the word was: '%s'" |> output
-        score.Attemps |> sprintf "Invalid guesses: '%i'" |> output
+        score |> output.Score
         score
 
     let ShowScoreHistory() =
-        clear()
-        stats |> List.iteri (fun i x -> (i, (if x.GameWon then "won" else "lost"), x.Word) |||> sprintf "%i: Game %s, the word was: '%s'" |> output)
+        newFrame()
+        stats |> output.ScoreHistory
         (config, stats) ||> Session
 
     match Menu ["Start Game" ; "Show scores" ; "Quit"] with
