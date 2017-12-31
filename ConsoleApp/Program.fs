@@ -5,22 +5,27 @@ open Session
 open DataStructures
 
 
+let private printStat x =  
+   ((if x.GameWon then "won" else "lost"), x.Word) ||> sprintf "Game was %s with the word %s."
+
 [<EntryPoint>]
 let main argv =
+
     let output = {
-        ScoreHistory = (fun x -> x |> List.iteri (fun i x -> (i, (if x.GameWon then "won" else "lost"), x.Word) |||> sprintf "%i: Game %s, the word was: '%s'" |> Console.WriteLine))
-        Menu = (fun x -> x |> List.iteri (fun i x -> (i + 1,x ) ||> printfn "%i: %s"))
-        CorrectGuess = (fun x -> x |> printfn "Letter '%c' is correct!")
-        IncorrectGuess = (fun x -> x |> printfn "Letter '%c' is incorrect.")
-        AllreadyGuessedLetter = (fun x -> x |> sprintf "Letter '%c' has allready been guessed." |> Console.WriteLine)
-        AttemptsSet = (fun x -> x |> printfn "Number of attempts is set to '%i'.")
-        Score = (fun x -> ((if x.GameWon then "won" else "lost"), x.Word) ||> sprintf "%s %s" |> Console.WriteLine)
-        Message = Console.WriteLine
-        LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | None -> '-') |> Seq.toArray |> Console.WriteLine)
+        ScoreHistory = List.iteri (fun i x -> (i ,x |> printStat) ||> printfn "%i: %s")
+        MenuItems = List.iteri (fun i x -> (i + 1, x ) ||> printfn "%i: %s")
+        CorrectGuess = printfn "Letter '%c' is correct!"
+        IncorrectGuess = printfn "Letter '%c' is incorrect."
+        AllreadyGuessed = printfn "Letter '%c' has allready been guessed."
+        AttemptsSet = printfn "Number of attempts is set to '%i'."
+        SetMaxAttempts = (fun () -> printf "Set max attempts: ")
+        GameOver =  printStat >> printfn "%s"
+        LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | _ -> '-') |> Seq.iter (fun x -> x |> printf "%c"))
     }
+
     let input = {
         Text = Console.ReadLine
-        Letter = (fun () -> Console.ReadKey(true)) >> fun cki -> cki.KeyChar
+        Letter = (fun () -> true |> Console.ReadKey) >> fun cki -> cki.KeyChar
     }
 
     let rnd = Random();

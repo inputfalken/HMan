@@ -44,14 +44,14 @@ let rec Session (config: Config) (stats: List<Stats>) =
         let letter = input.Letter()
         newFrame()
         if (letter, history) ||> List.contains then
-            letter |> output.AllreadyGuessedLetter
+            letter |> output.AllreadyGuessed
             (word, history) ||>  OutputWordProgress
             Guess history
         else letter
 
     let rec Menu (options : List<string>)  = 
         if options.Length > 0 then
-            options |> output.Menu
+            options |> output.MenuItems
             match input.Text() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) with
             | Some x -> x
             | _ -> options |> Menu
@@ -82,12 +82,12 @@ let rec Session (config: Config) (stats: List<Stats>) =
                    | _ ->  incorrect()) |||> Turn
 
     let StartGame() = 
-        "Set max attempts" |> output.Message
+        output.SetMaxAttempts()
         let maxInvalidGuesses = SetMaxInvalidGuesses()
         newFrame()
         maxInvalidGuesses |> output.AttemptsSet
         let score = Turn [] 0 maxInvalidGuesses
-        score |> output.Score
+        score |> output.GameOver
         score
 
     let ShowScoreHistory() =
