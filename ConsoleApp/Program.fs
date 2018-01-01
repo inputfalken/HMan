@@ -4,11 +4,13 @@ open System.IO
 open Session
 open DataStructures
 open Newtonsoft.Json
-open Newtonsoft.Json
 
 
-let private stringFormatStat x =  
-   ((if x.GameWon then "won" else "lost"), x.Word) ||> sprintf "Game was %s with the word %s."
+let private stringFormatStat (x:Stats) =  
+   let res = match x.GameOver with 
+             | Lost -> "Lost" 
+             | Won -> "Win"
+   (res, x.Word) ||> sprintf "Game was %s with the word %s."
 
 let private GetScoreHistory path =
     try 

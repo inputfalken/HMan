@@ -1,11 +1,18 @@
 ﻿module DataStructures
 
+type GameOver = 
+     | Won 
+     | Lost
+
+let GameOver attempts  maxAttempts = 
+    if attempts < maxAttempts then Won else Lost
+
 type Stats = {
     Word: string
     Attemps: int
     MaxAttemps: int
     Guesses: List<char>
-    GameWon: bool
+    GameOver: GameOver
 }
 
 type Output = {
@@ -40,3 +47,4 @@ type Config = {
     Output: Output
     Input: Input
 }
+
