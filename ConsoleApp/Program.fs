@@ -23,12 +23,11 @@ let private GetScoreHistory path =
 [<EntryPoint>]
 let main argv =
     let scoreFile = "scores.json"
-
     let output = {
         ScoreHistory = List.map stringFormatStat >> List.iteri (fun i x -> (i, x) ||> printfn "%i: %s")
         MenuItems = List.iteri (fun i x -> (i + 1, x ) ||> printfn "%i: %s")
-        CorrectGuess = printfn "Letter '%c' is correct!"
-        IncorrectGuess = printfn "Letter '%c' is incorrect."
+        CorrectGuess = (fun (x, y) -> x |> printfn "Letter '%c' is correct!")
+        IncorrectGuess = (fun (x, y) -> x |> printfn "Letter '%c' is incorrect.")
         AllreadyGuessed = printfn "Letter '%c' has allready been guessed."
         AttemptsSet = printfn "Number of attempts is set to '%i'."
         SetMaxAttempts = (fun () -> printf "Set max attempts: ")

@@ -59,7 +59,7 @@ let rec Session config stats =
             | _ -> options |> Menu
            
     
-    let rec Turn history attempts maxAttempts =
+    let rec Turn history (attempts: GuessCount) maxAttempts =
         (word, history) ||> OutputWordProgress
         let letter = history |> Guess
         let history = (history, letter) ||> SaveToHistory
@@ -70,7 +70,7 @@ let rec Session config stats =
             (history, attempts, maxAttempts)
             
         let incorrect() =
-            letter |> output.IncorrectGuess
+            (letter, attempts) |> output.IncorrectGuess
             (history, attempts + 1, maxAttempts)
 
         let maybeLost = (maxAttempts, attempts) ||> Lost
@@ -78,9 +78,9 @@ let rec Session config stats =
         let gameOver = (maybeLost, maybeWon) ||> Option.orElse
 
         match gameOver with
-        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history; GameOver = (attempts,  maxAttempts) ||> GameOver }
+        | Some _ -> { Word = word; GuessCount = attempts; GuessLimit = maxAttempts; Guesses = history; GameOver = (attempts,  maxAttempts) ||> GameOver }
         | _ -> (match correctGuess with
-                   | Some x -> x |> correct 
+                   | Some x -> (x, attempts) |> correct 
                    | _ ->  incorrect()) |||> Turn
 
     let StartGame() = 

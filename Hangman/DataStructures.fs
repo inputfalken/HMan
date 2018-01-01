@@ -4,13 +4,17 @@ type GameOver =
      | Won 
      | Lost
 
+type GuessCount = int
+type Guess = char * GuessCount
+type GuessLimit = GuessCount
+
 let GameOver attempts  maxAttempts = 
     if attempts < maxAttempts then Won else Lost
 
 type Stats = {
     Word: string
-    Attemps: int
-    MaxAttemps: int
+    GuessCount: GuessCount
+    GuessLimit: GuessLimit
     Guesses: List<char>
     GameOver: GameOver
 }
@@ -21,9 +25,9 @@ type Output = {
     /// Occurs first with game options, each list member is one option.
     MenuItems: List<string> -> unit
     /// Occurs when guessed letter is a correct guess.
-    CorrectGuess: char -> unit
+    CorrectGuess: Guess -> unit
     /// Occurs when guessed letter is an incorrect guess.
-    IncorrectGuess: char -> unit
+    IncorrectGuess: Guess -> unit
     /// Occurs when guessed letter has allready been guessed.
     AllreadyGuessed: char -> unit
     /// Occurs when the input input of max attempts is approved.
