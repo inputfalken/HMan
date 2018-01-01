@@ -5,21 +5,21 @@ open Session
 open DataStructures
 
 
-let private printStat x =  
+let private stringFormatStat x =  
    ((if x.GameWon then "won" else "lost"), x.Word) ||> sprintf "Game was %s with the word %s."
 
 [<EntryPoint>]
 let main argv =
 
     let output = {
-        ScoreHistory = List.iteri (fun i x -> (i ,x |> printStat) ||> printfn "%i: %s")
+        ScoreHistory = List.map stringFormatStat >> List.iteri (fun i x -> (i, x) ||> printfn "%i: %s")
         MenuItems = List.iteri (fun i x -> (i + 1, x ) ||> printfn "%i: %s")
         CorrectGuess = printfn "Letter '%c' is correct!"
         IncorrectGuess = printfn "Letter '%c' is incorrect."
         AllreadyGuessed = printfn "Letter '%c' has allready been guessed."
         AttemptsSet = printfn "Number of attempts is set to '%i'."
         SetMaxAttempts = (fun () -> printf "Set max attempts: ")
-        GameOver =  printStat >> printfn "%s"
+        GameOver =  stringFormatStat >> printfn "%s"
         LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | _ -> '-') |> Seq.iter (fun x -> x |> printf "%c"))
     }
 
