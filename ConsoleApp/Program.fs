@@ -3,13 +3,24 @@ open System
 open System.IO
 open Session
 open DataStructures
+open Newtonsoft.Json
+open Newtonsoft.Json
 
 
 let private stringFormatStat x =  
    ((if x.GameWon then "won" else "lost"), x.Word) ||> sprintf "Game was %s with the word %s."
 
+let private GetScoreHistory path =
+    try 
+        path |> File.ReadAllText  |> JsonConvert.DeserializeObject<List<Stats>>
+    with
+        | :? System.IO.IOException as ex -> printfn "Failed reading score file: %s" ex.Message ; []
+        | :? JsonSerializationException as ex -> printfn "Failed creating score history: %s" ex.Message ; []
+    
+
 [<EntryPoint>]
 let main argv =
+    let scoreFile = "scores.json"
 
     let output = {
         ScoreHistory = List.map stringFormatStat >> List.iteri (fun i x -> (i, x) ||> printfn "%i: %s")
@@ -37,6 +48,8 @@ let main argv =
         Output = output         
         Input = input
     }
-    let hangmanSession = (config, []) ||> Session
+    let hangmanSession = (config, scoreFile |> GetScoreHistory) ||> Session
+
+    File.WriteAllText(scoreFile, (hangmanSession |> JsonConvert.SerializeObject))
     0
 
