@@ -2,10 +2,10 @@
 open System
 open DataStructures
     
-let private CorrectGuess (letter: char) (word: string) =
+let private CorrectGuess letter word =
     letter |> Option.Some |> Option.filter(fun x -> word |> String.exists (fun y -> x = y))
 
-let private SaveToHistory (history: List<char>) (item: char) =
+let private SaveToHistory history item =
     (history, [item]) ||> List.append
 
 let private Won word history attempts =
@@ -14,7 +14,7 @@ let private Won word history attempts =
 let private Lost maxAttempts attempts =
     attempts |> Some |> Option.filter (fun x -> x >= maxAttempts)
 
-let private CorrectlyGuessedLetters (word: string) history =
+let private CorrectlyGuessedLetters word history =
     word |> Seq.map Some |> Seq.map (fun x -> x |> Option.filter (fun x -> (x, history) ||> Seq.contains))
 
 let private TryParseInt str =
@@ -22,7 +22,7 @@ let private TryParseInt str =
    | (true, int) -> Some(int)
    | _ -> None
     
-let rec Session (config: Config) (stats: List<Stats>) = 
+let rec Session config stats = 
     let ({ 
             NewFrame = newFrame
             WordSelector = wordSelector
@@ -40,7 +40,7 @@ let rec Session (config: Config) (stats: List<Stats>) =
     let OutputWordProgress word history =
          (word, history) ||> CorrectlyGuessedLetters |> output.LetterMatcher
 
-    let rec Guess (history: List<char>) =
+    let rec Guess history =
         let letter = input.Letter()
         newFrame()
         if (letter, history) ||> List.contains then
@@ -49,15 +49,17 @@ let rec Session (config: Config) (stats: List<Stats>) =
             Guess history
         else letter
 
-    let rec Menu (options : List<string>)  = 
-        if options.Length > 0 then
+    let rec Menu options = 
+        if  options |> List.isEmpty then
+            invalidArg "options" "List cannot be empty."
+        else 
             options |> output.MenuItems
             match input.Text() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) with
             | Some x -> x
             | _ -> options |> Menu
-        else invalidArg "options" "List cannot be empty."
+           
     
-    let rec Turn (history: List<char>) (attempts: int) (maxAttempts: int) =
+    let rec Turn history attempts maxAttempts =
         (word, history) ||> OutputWordProgress
         let letter = history |> Guess
         let history = (history, letter) ||> SaveToHistory
