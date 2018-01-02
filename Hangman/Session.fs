@@ -5,9 +5,6 @@ open DataStructures
 let private CorrectGuess letter word =
     letter |> Option.Some |> Option.filter(fun x -> word |> String.exists (fun y -> x = y))
 
-let private SaveToHistory history item =
-    (history, [item]) ||> List.append
-
 let private Won word history attempts =
     word |> Some |> Option.filter (fun x -> x |> String.forall (fun x -> history |> List.contains x)) |> Option.map (fun _ -> attempts)
 
@@ -62,7 +59,7 @@ let rec Session config stats =
     let rec Turn history attempts maxAttempts =
         (word, history) ||> OutputWordProgress
         let letter = history |> Guess
-        let history = (history, letter) ||> SaveToHistory
+        let history = letter :: history  // Add to history
         let correctGuess = (letter, word) ||> CorrectGuess
 
         let correct letter =
@@ -98,6 +95,6 @@ let rec Session config stats =
         (config, stats) ||> Session
 
     match Menu ["Start Game" ; "Show scores" ; "Quit"] with
-    | 1 -> (config, stats |> List.append [(StartGame())]) ||> Session
+    | 1 -> (config, StartGame() :: stats) ||> Session
     | 2 -> ShowScoreHistory()
     | 3 -> stats
