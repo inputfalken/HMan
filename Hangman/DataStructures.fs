@@ -5,8 +5,7 @@ type Stats = {
     Attemps: int
     MaxAttemps: int
     Guesses: List<char>
-    GameWon: bool
-}
+} with member this.GameWon = this.Attemps < this.MaxAttemps
 
 type Output = {
     /// Occurs when the 'Show Scores' option is choosen.

@@ -75,7 +75,7 @@ let rec Session config stats =
         let gameOver = (maybeLost, maybeWon) ||> Option.orElse
 
         match gameOver with
-        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history; GameWon = attempts < maxAttempts }
+        | Some _ -> { Word = word; Attemps = attempts; MaxAttemps = maxAttempts; Guesses = history; }
         | _ -> (match correctGuess with
                    | Some x -> x |> correct 
                    | _ ->  incorrect()) |||> Turn
