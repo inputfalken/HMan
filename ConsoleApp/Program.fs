@@ -6,12 +6,12 @@ open DataStructures
 open Newtonsoft.Json
 
 
-let private stringFormatStat (x: Stats) =  
+let private stringFormatStat (x: Score) =  
    ((if x.GameWon then "won" else "lost"), x.Word) ||> sprintf "Game was %s with the word %s."
 
 let private GetScoreHistory path =
     try 
-        path |> File.ReadAllText  |> JsonConvert.DeserializeObject<List<Stats>>
+        path |> File.ReadAllText  |> JsonConvert.DeserializeObject<List<Score>>
     with
         | :? System.IO.IOException as ex -> printfn "Failed reading score file: %s" ex.Message ; []
         | :? JsonSerializationException as ex -> printfn "Failed creating score history: %s" ex.Message ; []

@@ -2,7 +2,7 @@
 
 type MenuItem = Start | Score | Quit
 
-type Stats = {
+type Score = {
     Word: string
     Attemps: int
     MaxAttemps: int
@@ -20,7 +20,7 @@ type Letter = {
 
 type Output = {
     /// Occurs when the 'Show Scores' option is choosen.
-    ScoreHistory: List<Stats> -> unit
+    ScoreHistory: List<Score> -> unit
     /// Occurs first with game options, each list member is one option.
     MenuItems: MenuItem[] -> unit
     /// Occurs when guessed letter is a correct guess.
@@ -34,7 +34,7 @@ type Output = {
     /// Occurs before program expects an input of max attempts.
     SetMaxAttempts: unit -> unit
     /// Occurs when a game has ended.
-    GameOver: Stats -> unit
+    GameOver: Score -> unit
     /// Occurs every time an guess has been evaluated.
     LetterMatcher: seq<Letter> -> unit
 }
