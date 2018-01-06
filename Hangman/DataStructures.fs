@@ -9,6 +9,15 @@ type Stats = {
     Guesses: List<char>
 } with member this.GameWon = this.Attemps < this.MaxAttemps
 
+type Status =
+     | Guessed
+     | Unguessed
+
+type Letter = {
+    Status: Status
+    Char: char
+}
+
 type Output = {
     /// Occurs when the 'Show Scores' option is choosen.
     ScoreHistory: List<Stats> -> unit
@@ -27,9 +36,8 @@ type Output = {
     /// Occurs when a game has ended.
     GameOver: Stats -> unit
     /// Occurs every time an guess has been evaluated.
-    LetterMatcher: seq<Option<char>> -> unit
+    LetterMatcher: seq<Letter> -> unit
 }
-
 
 type Input = {
     Text: unit -> string

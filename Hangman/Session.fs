@@ -1,4 +1,4 @@
-﻿module Session
+﻿module Session 
 open System
 open DataStructures
     
@@ -18,7 +18,7 @@ let private TryParseInt str =
    match Int32.TryParse(str) with
    | (true, int) -> Some(int)
    | _ -> None
-    
+
 let rec Session config stats = 
     let ({ 
             NewFrame = newFrame
@@ -35,7 +35,7 @@ let rec Session config stats =
         | _ -> SetMaxInvalidGuesses()
 
     let OutputWordProgress word history =
-         (word, history) ||> CorrectlyGuessedLetters |> output.LetterMatcher
+          word |> Seq.map (fun x -> if (x, history) ||> List.contains then { Status = Status.Guessed ; Char = x} else { Status = Status.Unguessed ; Char = x }) |> output.LetterMatcher
 
     let rec Guess history =
         let letter = input.Letter()
@@ -55,7 +55,6 @@ let rec Session config stats =
             match input.Text() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) |> Option.map (fun x -> options.[x - 1]) with
             | Some x -> x
             | _ -> options |> Menu
-           
     
     let rec Turn history attempts maxAttempts =
         (word, history) ||> OutputWordProgress

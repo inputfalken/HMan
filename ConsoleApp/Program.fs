@@ -15,7 +15,6 @@ let private GetScoreHistory path =
     with
         | :? System.IO.IOException as ex -> printfn "Failed reading score file: %s" ex.Message ; []
         | :? JsonSerializationException as ex -> printfn "Failed creating score history: %s" ex.Message ; []
-    
 
 [<EntryPoint>]
 let main argv =
@@ -30,7 +29,7 @@ let main argv =
         AttemptsSet = printfn "Number of attempts is set to '%i'."
         SetMaxAttempts = (fun () -> printf "Set max attempts: ")
         GameOver =  stringFormatStat >> printfn "%s"
-        LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x with | Some x -> x | _ -> '-') |> Seq.iter (fun x -> x |> printf "%c"))
+        LetterMatcher = (fun x -> x |> Seq.map (fun x -> match x.Status with | Guessed  _ ->  x.Char | Unguessed _ -> '-') |> Seq.iter (fun x -> x |> printf "%c"))
     }
 
     let input = {
