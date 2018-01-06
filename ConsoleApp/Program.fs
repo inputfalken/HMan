@@ -23,7 +23,7 @@ let main argv =
 
     let output = {
         ScoreHistory = List.map stringFormatStat >> List.iteri (fun i x -> (i, x) ||> printfn "%i: %s")
-        MenuItems = List.iteri (fun i x -> (i + 1, x ) ||> printfn "%i: %s")
+        MenuItems = Array.iteri (fun i x -> (i + 1, x ) ||> printfn "%i: %A")
         CorrectGuess = printfn "Letter '%c' is correct!"
         IncorrectGuess = printfn "Letter '%c' is incorrect."
         AllreadyGuessed = printfn "Letter '%c' has allready been guessed."

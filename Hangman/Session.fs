@@ -46,12 +46,13 @@ let rec Session config stats =
             Guess history
         else letter
 
-    let rec Menu options = 
-        if  options |> List.isEmpty then
+    let rec Menu (options: MenuItem[]) = 
+        if  options |> Array.isEmpty then
             invalidArg "options" "List cannot be empty."
+
         else 
             options |> output.MenuItems
-            match input.Text() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) with
+            match input.Text() |> TryParseInt |> Option.filter (fun x -> x <= options.Length) |> Option.filter (fun x -> x > 0) |> Option.map (fun x -> options.[x - 1]) with
             | Some x -> x
             | _ -> options |> Menu
            
@@ -94,7 +95,7 @@ let rec Session config stats =
         stats |> output.ScoreHistory
         (config, stats) ||> Session
 
-    match Menu ["Start Game" ; "Show scores" ; "Quit"] with
-    | 1 -> (config, StartGame() :: stats) ||> Session
-    | 2 -> ShowScoreHistory()
-    | 3 -> stats
+    match Menu [|Start ; Score; Quit|] with
+    | Start -> (config, StartGame() :: stats) ||> Session
+    | Score -> ShowScoreHistory()
+    | Quit -> stats

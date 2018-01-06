@@ -1,5 +1,7 @@
 ﻿module DataStructures
 
+type MenuItem = Start | Score | Quit
+
 type Stats = {
     Word: string
     Attemps: int
@@ -11,7 +13,7 @@ type Output = {
     /// Occurs when the 'Show Scores' option is choosen.
     ScoreHistory: List<Stats> -> unit
     /// Occurs first with game options, each list member is one option.
-    MenuItems: List<string> -> unit
+    MenuItems: MenuItem[] -> unit
     /// Occurs when guessed letter is a correct guess.
     CorrectGuess: char -> unit
     /// Occurs when guessed letter is an incorrect guess.
@@ -27,6 +29,7 @@ type Output = {
     /// Occurs every time an guess has been evaluated.
     LetterMatcher: seq<Option<char>> -> unit
 }
+
 
 type Input = {
     Text: unit -> string
